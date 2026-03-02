@@ -13,7 +13,13 @@
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://13.energy/blog-solar-panels-worth-it-2026.html blog-cheapest-electricity-rates-by-state-2026.html</loc>
+    <loc>https://13.energy/blog-cheapest-electricity-rates-by-state-2026.html</loc>
+    <lastmod>2026-03-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://13.energy/blog-solar-panels-worth-it-2026.html</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
