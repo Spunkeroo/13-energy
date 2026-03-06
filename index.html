@@ -134,9 +134,10 @@ footer a{color:#f59e0b;margin:0 8px;}
   <h1>Cut Your Energy Bill by 40%</h1>
   <p>Compare electricity rates, get free solar quotes, and switch to cheaper energy plans in minutes. Trusted by 500,000+ households.</p>
   <div class="zip-box">
-    <input type="text" placeholder="Enter your ZIP code" aria-label="ZIP code" maxlength="5">
-    <button type="button">Compare Rates</button>
+    <input type="text" id="zip-input" placeholder="Enter your ZIP code" aria-label="ZIP code" maxlength="5" onkeydown="if(event.key==='Enter')searchByZip()">
+    <button type="button" onclick="searchByZip()">Compare Rates</button>
   </div>
+  <div id="zip-result" style="margin-top:14px;font-size:0.95rem;font-weight:600;color:#22c55e;min-height:24px;"></div>
   <div class="stats">
     <div class="stat"><div class="num">$847</div><div class="label">Avg. Annual Savings</div></div>
     <div class="stat"><div class="num">200+</div><div class="label">Energy Providers</div></div>
@@ -337,36 +338,79 @@ footer a{color:#f59e0b;margin:0 8px;}
 </footer>
 
 <script>
-// 10-second heartbeat: auto-refresh energy prices and stats
-function refreshEnergyData(){
-  // Simulate live rate fluctuations
-  document.querySelectorAll('.rate').forEach(function(el){
-    var m=el.textContent.match(/([\d.]+)/);
-    if(!m)return;
-    var base=parseFloat(m[1]);
-    var delta=(Math.random()*0.4-0.2).toFixed(1);
-    var newRate=(base+parseFloat(delta)).toFixed(1);
-    if(newRate<5)newRate='5.0';if(newRate>15)newRate='15.0';
-    el.innerHTML=newRate+'¢ <span>/kWh</span>';
-    el.style.transition='color 0.3s';
-    el.style.color=delta>0?'#ef4444':'#22c55e';
-    setTimeout(function(){el.style.color='';},2000);
-  });
-  // Pulse savings numbers
-  var savingsEl=document.querySelector('.stats .num');
-  if(savingsEl){
-    var base=847;
-    var delta=Math.floor(Math.random()*50)-25;
-    savingsEl.textContent='$'+(base+delta);
-  }
-  // Timestamp
-  var ts=document.getElementById('last-updated');
-  if(ts)ts.textContent='Updated: '+new Date().toLocaleTimeString();
+function searchByZip(){
+  var zip=document.getElementById('zip-input').value.trim();
+  var res=document.getElementById('zip-result');
+  if(!/^\d{5}$/.test(zip)){res.style.color='#ef4444';res.textContent='⚠ Please enter a valid 5-digit ZIP code.';return;}
+  var prefix=parseInt(zip.slice(0,3));
+  var state='your area';
+  if(prefix>=10&&prefix<=199)state='New York';
+  else if(prefix>=200&&prefix<=209)state='Washington D.C.';
+  else if(prefix>=210&&prefix<=219)state='Maryland';
+  else if(prefix>=220&&prefix<=246)state='Virginia';
+  else if(prefix>=247&&prefix<=268)state='West Virginia';
+  else if(prefix>=270&&prefix<=289)state='North Carolina';
+  else if(prefix>=290&&prefix<=299)state='South Carolina';
+  else if(prefix>=300&&prefix<=319)state='Georgia';
+  else if(prefix>=320&&prefix<=339)state='Florida';
+  else if(prefix>=340&&prefix<=349)state='Florida';
+  else if(prefix>=350&&prefix<=369)state='Alabama';
+  else if(prefix>=370&&prefix<=385)state='Tennessee';
+  else if(prefix>=386&&prefix<=397)state='Mississippi';
+  else if(prefix>=398&&prefix<=399)state='Georgia';
+  else if(prefix>=400&&prefix<=427)state='Kentucky';
+  else if(prefix>=430&&prefix<=459)state='Ohio';
+  else if(prefix>=460&&prefix<=479)state='Indiana';
+  else if(prefix>=480&&prefix<=499)state='Michigan';
+  else if(prefix>=500&&prefix<=528)state='Iowa';
+  else if(prefix>=530&&prefix<=549)state='Wisconsin';
+  else if(prefix>=550&&prefix<=567)state='Minnesota';
+  else if(prefix>=570&&prefix<=577)state='South Dakota';
+  else if(prefix>=580&&prefix<=588)state='North Dakota';
+  else if(prefix>=590&&prefix<=599)state='Montana';
+  else if(prefix>=600&&prefix<=629)state='Illinois';
+  else if(prefix>=630&&prefix<=658)state='Missouri';
+  else if(prefix>=660&&prefix<=679)state='Kansas';
+  else if(prefix>=680&&prefix<=693)state='Nebraska';
+  else if(prefix>=700&&prefix<=714)state='Louisiana';
+  else if(prefix>=716&&prefix<=729)state='Arkansas';
+  else if(prefix>=730&&prefix<=749)state='Oklahoma';
+  else if(prefix>=750&&prefix<=799)state='Texas';
+  else if(prefix>=800&&prefix<=816)state='Colorado';
+  else if(prefix>=820&&prefix<=831)state='Wyoming';
+  else if(prefix>=832&&prefix<=838)state='Idaho';
+  else if(prefix>=840&&prefix<=847)state='Utah';
+  else if(prefix>=850&&prefix<=865)state='Arizona';
+  else if(prefix>=870&&prefix<=884)state='New Mexico';
+  else if(prefix>=889&&prefix<=898)state='Nevada';
+  else if(prefix>=900&&prefix<=961)state='California';
+  else if(prefix>=970&&prefix<=979)state='Oregon';
+  else if(prefix>=980&&prefix<=994)state='Washington';
+  else if(prefix>=995&&prefix<=999)state='Alaska';
+  res.style.color='#22c55e';
+  res.textContent='⚡ Showing energy plans available in '+state+' (ZIP: '+zip+')';
+  document.getElementById('compare').scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('compare').querySelector('.section-title').textContent='Energy Plans in '+state;
 }
-setInterval(refreshEnergyData,10000);
 </script>
 <script src="https://spunk.codes/cross-promo.js" defer></script>
-
+<script>
+window.shareEnergy=function(){var txt='Just found this free tool to compare electricity rates and get solar quotes in your area — could save you 40% on your energy bill. 13.energy via @SpunkArt13';window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(txt),'_blank');};
+window.subscribeEnergyNL=function(){var em=document.getElementById('energy-nl-email');if(!em||!em.value.includes('@'))return;var key='energy_nl_'+em.value;if(localStorage.getItem(key))return;localStorage.setItem(key,'1');fetch('https://predict-network-ec767-default-rtdb.firebaseio.com/energy_newsletter.json',{method:'POST',body:JSON.stringify({email:em.value,t:Date.now()}),headers:{'Content-Type':'application/json'}}).catch(function(){});var msg=document.getElementById('energy-nl-msg');if(msg)msg.style.display='block';em.value='';};
+</script>
+<div style="background:linear-gradient(135deg,#1a150d,#0a0a0f);border-top:2px solid #f59e0b;border-bottom:1px solid #1f1a0f;padding:40px 24px;text-align:center">
+  <p style="font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:8px">Save up to 40% on your energy bill</p>
+  <p style="color:#888;font-size:.9rem;margin-bottom:20px">Share with friends and family who are overpaying for electricity</p>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+    <button onclick="shareEnergy()" style="background:linear-gradient(135deg,#1da1f2,#0d8ecf);color:#fff;font-weight:700;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:.88rem">Share on X →</button>
+    <a href="https://www.amazon.com/s?k=solar+panels+home&tag=spunk01-20" target="_blank" rel="noopener sponsored" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;font-weight:800;padding:10px 20px;border-radius:8px;font-size:.88rem;display:inline-block">Shop Solar on Amazon →</a>
+  </div>
+  <div style="display:flex;gap:8px;max-width:400px;margin:0 auto">
+    <input id="energy-nl-email" type="email" placeholder="your@email.com" style="flex:1;background:#12121f;border:1px solid #1f1a0f;color:#e0e0e0;padding:10px 14px;border-radius:8px;font-size:.88rem;font-family:inherit">
+    <button onclick="subscribeEnergyNL()" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;font-weight:800;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;white-space:nowrap">Get Alerts</button>
+  </div>
+  <p id="energy-nl-msg" style="color:#22c55e;font-size:.8rem;margin-top:8px;display:none">Energy savings tips on the way!</p>
+</div>
 <!-- Tip Spunk Modal -->
 <div class="tip-modal-overlay" id="tip-spunk-modal" onclick="if(event.target===this)closeTipModal()">
   <div class="tip-modal">
